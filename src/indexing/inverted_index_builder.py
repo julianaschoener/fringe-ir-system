@@ -2,7 +2,7 @@
 
 import pickle
 from collections import defaultdict
-from src.indexing.text_preprocessor import TextPreprocessor
+from src.indexing.text_processor import TextProcessor
 
 class InvertedIndex:
     """Handles inverted index creation and basic search"""
@@ -25,9 +25,9 @@ class InvertedIndex:
             text_content = f"{episode.get('Title', '')} {episode.get('Script', '')}"
 
             if use_bigrams:
-                tokens = TextPreprocessor.preprocess_with_bigrams(text_content)
+                tokens = TextProcessor.preprocess_with_bigrams(text_content)
             else:
-                tokens = TextPreprocessor.preprocess(text_content)
+                tokens = TextProcessor.preprocess(text_content)
 
             self.doc_lengths[doc_id] = len(tokens)
             total_length += len(tokens)
@@ -40,7 +40,7 @@ class InvertedIndex:
 
     def boolean_search(self, query):
         """Basic boolean search (AND operation)"""
-        query_words = TextPreprocessor.preprocess(query)
+        query_words = TextProcessor.preprocess(query)
         if not query_words:
             return []
 

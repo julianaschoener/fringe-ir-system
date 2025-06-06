@@ -1,8 +1,7 @@
-# src/retrieval_methods/semantic_retriever.py
+
 
 import pickle
 from src.indexing.inverted_index_builder import InvertedIndex
-from src.indexing.text_preprocessor import TextPreprocessor
 
 try:
     from sentence_transformers import SentenceTransformer
@@ -101,3 +100,4 @@ class SemanticRetriever:
 
         except FileNotFoundError:
             print(f"Embeddings file {filename} not found. Please build embeddings first.")
+

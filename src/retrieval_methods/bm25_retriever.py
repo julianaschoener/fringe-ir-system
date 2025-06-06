@@ -1,7 +1,6 @@
-# src/retrieval_methods/bm25_retriever.py
 
 import math
-from src.indexing.text_preprocessor import TextPreprocessor
+from src.indexing.text_processor import TextProcessor
 from src.indexing.inverted_index_builder import InvertedIndex
 
 
@@ -17,7 +16,7 @@ class BM25Retriever:
         """Calculate BM25 score for a document given query terms"""
         doc = self.index.documents[doc_id]
         text_content = f"{doc.get('Title', '')} {doc.get('Script', '')}"
-        doc_tokens = TextPreprocessor.preprocess(text_content)
+        doc_tokens = TextProcessor.preprocess(text_content)
         doc_length = len(doc_tokens)
 
         score = 0
@@ -34,7 +33,7 @@ class BM25Retriever:
 
     def search(self, query, top_k=10):
         """Perform BM25 based search"""
-        query_terms = TextPreprocessor.preprocess(query)
+        query_terms = TextProcessor.preprocess(query)
         if not query_terms:
             return []
 

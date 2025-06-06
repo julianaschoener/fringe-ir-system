@@ -1,3 +1,9 @@
+from src.indexing.inverted_index_builder import InvertedIndex
+from src.indexing.text_processor import TextProcessor
+import math
+import numpy as np
+from collections import Counter
+
 
 class TFIDFRetriever:
     """TF-IDF based retrieval system"""
@@ -10,7 +16,7 @@ class TFIDFRetriever:
         """Calculate term frequency"""
         doc = self.index.documents[doc_id]
         text_content = f"{doc.get('Title', '')} {doc.get('Script', '')}"
-        tokens = TextPreprocessor.preprocess(text_content)
+        tokens = TextProcessor.preprocess(text_content)
         term_count = tokens.count(term)
         return term_count / len(tokens) if tokens else 0
 
@@ -53,7 +59,7 @@ class TFIDFRetriever:
 
     def search(self, query, top_k=10):
         """Perform TF-IDF based search"""
-        query_terms = list(set(TextPreprocessor.preprocess(query)))  # Remove duplicates
+        query_terms = TextProcessor.preprocess(query)  # Remove duplicates
         if not query_terms:
             return []
 
@@ -64,6 +70,7 @@ class TFIDFRetriever:
                 candidate_docs.update(self.index.index[term])
 
         if not candidate_docs:
+            print("No documents matched the query terms.")
             return []
 
         # Calculate similarities
