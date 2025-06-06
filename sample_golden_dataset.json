@@ -1,0 +1,53 @@
+[
+  {
+    "query": "Walter Bishop science quotes",
+    "expected_results": [
+      {
+        "episode_id": 1,
+        "relevance": 2
+      },
+      {
+        "episode_id": 8,
+        "relevance": 2
+      },
+      {
+        "episode_id": 16,
+        "relevance": 1
+      }
+    ]
+  },
+  {
+    "query": "Peter Bishop alternate universe",
+    "expected_results": [
+      {
+        "episode_id": 45,
+        "relevance": 2
+      },
+      {
+        "episode_id": 22,
+        "relevance": 2
+      },
+      {
+        "episode_id": 43,
+        "relevance": 1
+      }
+    ]
+  },
+  {
+    "query": "shapeshifters episodes",
+    "expected_results": [
+      {
+        "episode_id": 27,
+        "relevance": 2
+      },
+      {
+        "episode_id": 14,
+        "relevance": 1
+      },
+      {
+        "episode_id": 35,
+        "relevance": 1
+      }
+    ]
+  }
+]
