@@ -1,70 +1,75 @@
-# Fringe Information Retrieval System
-# Complete implementation with all retrieval methods and evaluation
+# src/indexing/inverted_index_builder.py
 
-import os
-import re
-import json
 import pickle
-import time
-import math
-import numpy as np
-import pandas as pd
-from collections import defaultdict, Counter
-from typing import List, Dict, Tuple, Set
-import requests
-from bs4 import BeautifulSoup
+from collections import defaultdict
+from src.indexing.text_processor import TextProcessor
 
-# For semantic similarity (you'll need to install these)
-try:
-    from sentence_transformers import SentenceTransformer
-    import faiss
+class InvertedIndex:
+    """Handles inverted index creation and basic search"""
 
-    SEMANTIC_AVAILABLE = True
-except ImportError:
-    print("Warning: sentence-transformers and/or faiss not available. Semantic search will be disabled.")
-    SEMANTIC_AVAILABLE = False
+    def __init__(self):
+        self.index = defaultdict(set)
+        self.documents = {}
+        self.doc_lengths = {}
+        self.avg_doc_length = 0
+        self.total_docs = 0
 
+    def build_index(self, dataset, use_bigrams=False):
+        """Build inverted index from dataset"""
+        self.documents = {doc['id']: doc for doc in dataset}
+        self.total_docs = len(dataset)
+        total_length = 0
 
+        for episode in dataset:
+            doc_id = episode['id']
+            text_content = f"{episode.get('Title', '')} {episode.get('Script', '')}"
 
-def main():
-    # Step 1: Scrape or load the dataset
-    # Step 2: Build the inverted index
-    # Step 3: Run an example search
-    pass  # fill in
+            if use_bigrams:
+                tokens = TextProcessor.preprocess_with_bigrams(text_content)
+            else:
+                tokens = TextProcessor.preprocess(text_content)
 
-if __name__ == "__main__":
-    main()
-from src.indexing.inverted_index_builder import InvertedIndex
-from src.retrieval_methods.tfidf_retriever import TFIDFRetriever
+            self.doc_lengths[doc_id] = len(tokens)
+            total_length += len(tokens)
 
-# build/load index
-index = InvertedIndex()
-index.load_index("inverted_index.pkl")
+            for token in tokens:
+                self.index[token].add(doc_id)
 
-# use TF-IDF retrieval
-retriever = TFIDFRetriever(index)
-results = retriever.search("Walter Bishop experiments", top_k=5)
+        self.avg_doc_length = total_length / self.total_docs if self.total_docs > 0 else 0
+        print(f"✅ Built inverted index with {len(self.index)} unique terms")
 
+    def boolean_search(self, query):
+        """Basic boolean search (AND operation)"""
+        query_words = TextProcessor.preprocess(query)
+        if not query_words:
+            return []
 
-from src.indexing.inverted_index_builder import InvertedIndex
-from src.retrieval_methods.bm25_retriever import BM25Retriever
+        result_sets = [self.index.get(word, set()) for word in query_words]
+        result_ids = set.intersection(*result_sets) if result_sets else set()
+        return sorted(result_ids)
 
-index = InvertedIndex()
-index.load_index("inverted_index.pkl")
+    def save_index(self, filename="inverted_index.pkl"):
+        """Save inverted index to file"""
+        index_data = {
+            'index': dict(self.index),
+            'documents': self.documents,
+            'doc_lengths': self.doc_lengths,
+            'avg_doc_length': self.avg_doc_length,
+            'total_docs': self.total_docs
+        }
 
-retriever = BM25Retriever(index)
-results = retriever.search("Peter Bishop cortexiphan", top_k=5)
+        with open(filename, 'wb') as f:
+            pickle.dump(index_data, f)
+        print(f"✅ Saved inverted index to {filename}")
 
-from src.indexing.text_preprocessor import TextPreprocessor
-from src.indexing.inverted_index_builder import InvertedIndex
+    def load_index(self, filename="inverted_index.pkl"):
+        """Load inverted index from file"""
+        with open(filename, 'rb') as f:
+            index_data = pickle.load(f)
 
-from src.indexing.inverted_index_builder import InvertedIndex
-from src.retrieval_methods.semantic_retriever import SemanticRetriever
-
-index = InvertedIndex()
-index.load_index("inverted_index.pkl")
-
-retriever = SemanticRetriever(index)
-retriever.build_embeddings()  # oder retriever.load_embeddings()
-results = retriever.search("parallel universes and Olivia Dunham", top_k=5)
-
+        self.index = defaultdict(set, index_data['index'])
+        self.documents = index_data['documents']
+        self.doc_lengths = index_data['doc_lengths']
+        self.avg_doc_length = index_data['avg_doc_length']
+        self.total_docs = index_data['total_docs']
+        print(f"✅ Loaded inverted index from {filename}")

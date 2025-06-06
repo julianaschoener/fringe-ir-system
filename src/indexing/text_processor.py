@@ -4,7 +4,7 @@
 
 import re
 
-class TextPreprocessor:
+class TextProcessor:
     """Handles text preprocessing and tokenization"""
 
     @staticmethod
