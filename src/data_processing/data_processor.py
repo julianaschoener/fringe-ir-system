@@ -1,4 +1,3 @@
-
 class FringeDataProcessor:
     """Handles data scraping and preprocessing"""
 
@@ -130,4 +129,3 @@ class FringeDataProcessor:
         print(f"✅ Saved dataset to {filename_base}.pkl")
 
         return df
-

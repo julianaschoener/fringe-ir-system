@@ -86,4 +86,3 @@ class TFIDFRetriever:
         # Sort by similarity and return top_k
         similarities.sort(key=lambda x: x[1], reverse=True)
         return similarities[:top_k]
-

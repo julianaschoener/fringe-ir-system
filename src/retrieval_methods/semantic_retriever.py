@@ -1,5 +1,3 @@
-
-
 import pickle
 from src.indexing.inverted_index_builder import InvertedIndex
 
@@ -100,4 +98,3 @@ class SemanticRetriever:
 
         except FileNotFoundError:
             print(f"Embeddings file {filename} not found. Please build embeddings first.")
-
